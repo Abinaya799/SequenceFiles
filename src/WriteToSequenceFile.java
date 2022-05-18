@@ -10,6 +10,11 @@ The compression type is BLOCK
 Instructions
 1) Make sure you have included the native hadoop library as environment variable in .bashrc
 export HADOOP_OPTS="$HADOOP_OPTS -Djava.library.path=$HADOOP_HOME/lib/native"
+2) Make sure to add the following libraries
+hadoop-common-2.4.0.jar
+hadoop-hdfs-2.4.0.jar
+hadoop-mapreduce-client-common-2.4.0.jar
+hadoop-mapreduce-client-core-2.4.0.jar
 */
 
 
@@ -71,6 +76,7 @@ public class WriteToSequenceFile {
 //            Gets an array of list of files in the input path
             FileStatus[] status = fs.listStatus(input_path);
             int number_of_files = status.length;
+            long key1 =0;
             for (int i = 0; i < number_of_files; i++) {
 
 //                Gets the file according to index
@@ -84,12 +90,13 @@ public class WriteToSequenceFile {
 //                Write to the file
                 while (inputStream.available() > 0) {
                     value.set(readStream.readLine());
-                    writer.append(new LongWritable(value.getLength()), value);
+                    key.set(key1++);
+                    writer.append(key, value);
 
                 }
                 System.out.println("Written");
+                inputStream.close();
             }
-
             fs.close();
             IOUtils.closeStream(writer);
             System.out.println("Sequence File Created!!");
